@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "crypto-js": "^4.1.1",
     "expo": "~42.0.1",
     "expo-barcode-scanner": "~10.2.2",
     "expo-permissions": "~12.1.1",
@@ -18,7 +19,10 @@
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0"
+    "@babel/core": "^7.9.0",
+    "@types/react": "~16.9.35",
+    "@types/react-native": "~0.63.2",
+    "typescript": "~4.0.0"
   },
   "private": true
 }
