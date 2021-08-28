@@ -1,77 +1,77 @@
-const MAX_QR_CHUNK_LENGTH = 1191;
+// const MAX_QR_CHUNK_LENGTH = 1191;
 
-// export async function validate(qr: string[]) {
+// // export async function validate(qr: string[]) {
 
-//     const jwsString = shcChunksToJws(qr);
-//     console.log(jwsString)
-//     jwsString && await jws.validate(jwsString);
-//     console.log()
-//     return log;
+// //     const jwsString = shcChunksToJws(qr);
+// //     console.log(jwsString)
+// //     jwsString && await jws.validate(jwsString);
+// //     console.log()
+// //     return log;
+// // }
+
+
+// function shcChunksToJws(shc: string[]) {
+
+//     const chunkCount = shc.length;
+//     const jwsChunks = new Array<String>(chunkCount);
+
+//     for (let shcChunk of shc) {
+
+//         if (shcChunk.trim() !== shcChunk) {
+//             console.log(`Numeric QR has leading or trailing spaces`);
+//             shcChunk = shcChunk.trim();
+//         }
+
+//         const chunkResult = shcToJws(shcChunk, chunkCount);
+
+//         if (!chunkResult) return undefined; // move on to next chunk
+
+//         const chunkIndex = chunkResult.chunkIndex;
+//         if (chunkResult.result.length > MAX_QR_CHUNK_LENGTH) {
+//             console.log(`QR chunk ${chunkIndex} is larger than ${MAX_QR_CHUNK_LENGTH} bytes`);
+//         }
+
+//         if (jwsChunks[chunkIndex - 1]) {
+//             // we have a chunk index collision
+//             // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+//             console.log(`we have two chunks with index ${chunkIndex}`);
+//             return undefined;
+//         } else {
+//             jwsChunks[chunkIndex - 1] = chunkResult.result;
+//         }
+//     }
+//     // make sure we have all chunks we expect
+//     for (let i = 0; i < chunkCount; i++) {
+//         if (!jwsChunks[i]) {
+//             // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+//             console.log(`missing QR chunk + ${i}`)
+//             return undefined;
+//         }
+//     }
+
+//     if (shc.length > 1) console.log('All shc parts decoded');
+
+//     const jws = jwsChunks.join('');
+
+//     if (chunkCount > 1 && jws.length <= MAX_QR_CHUNK_LENGTH) {
+//         console.log(`JWS of size ${jws.length} (<= ${MAX_QR_CHUNK_LENGTH}) didn't need to be split in ${chunkCount} chunks`);
+//     }
+
+//     // check if chunk sizes are balanced
+//     const expectedChunkSize = Math.floor(jws.length / chunkCount);
+//     const balancedSizeBuffer = Math.ceil(expectedChunkSize * (0.5 / 100)); // give some leeway to what we call "balanced", 0.5% away from expected size
+//     if (jwsChunks.map(jwsChunk => jwsChunk.length)
+//         .reduce((unbalanced, length) => unbalanced || length < expectedChunkSize - balancedSizeBuffer || length > expectedChunkSize + balancedSizeBuffer, false)) {
+//         let unbalanced = jwsChunks.map(jwsChunk => jwsChunk.length.toString()).join()
+//         console.log(`QR chunk sizes are unbalanced:  + ${unbalanced}`);
+//     }
+
+//     console.log('JWS = ' + jws);
+//     return jws;
 // }
 
 
-function shcChunksToJws(shc: string[]) {
-
-    const chunkCount = shc.length;
-    const jwsChunks = new Array<String>(chunkCount);
-
-    for (let shcChunk of shc) {
-
-        if (shcChunk.trim() !== shcChunk) {
-            console.log(`Numeric QR has leading or trailing spaces`);
-            shcChunk = shcChunk.trim();
-        }
-
-        const chunkResult = shcToJws(shcChunk, chunkCount);
-
-        if (!chunkResult) return undefined; // move on to next chunk
-
-        const chunkIndex = chunkResult.chunkIndex;
-        if (chunkResult.result.length > MAX_QR_CHUNK_LENGTH) {
-            console.log(`QR chunk ${chunkIndex} is larger than ${MAX_QR_CHUNK_LENGTH} bytes`);
-        }
-
-        if (jwsChunks[chunkIndex - 1]) {
-            // we have a chunk index collision
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-            console.log(`we have two chunks with index ${chunkIndex}`);
-            return undefined;
-        } else {
-            jwsChunks[chunkIndex - 1] = chunkResult.result;
-        }
-    }
-    // make sure we have all chunks we expect
-    for (let i = 0; i < chunkCount; i++) {
-        if (!jwsChunks[i]) {
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-            console.log(`missing QR chunk + ${i}`)
-            return undefined;
-        }
-    }
-
-    if (shc.length > 1) console.log('All shc parts decoded');
-
-    const jws = jwsChunks.join('');
-
-    if (chunkCount > 1 && jws.length <= MAX_QR_CHUNK_LENGTH) {
-        console.log(`JWS of size ${jws.length} (<= ${MAX_QR_CHUNK_LENGTH}) didn't need to be split in ${chunkCount} chunks`);
-    }
-
-    // check if chunk sizes are balanced
-    const expectedChunkSize = Math.floor(jws.length / chunkCount);
-    const balancedSizeBuffer = Math.ceil(expectedChunkSize * (0.5 / 100)); // give some leeway to what we call "balanced", 0.5% away from expected size
-    if (jwsChunks.map(jwsChunk => jwsChunk.length)
-        .reduce((unbalanced, length) => unbalanced || length < expectedChunkSize - balancedSizeBuffer || length > expectedChunkSize + balancedSizeBuffer, false)) {
-        let unbalanced = jwsChunks.map(jwsChunk => jwsChunk.length.toString()).join()
-        console.log(`QR chunk sizes are unbalanced:  + ${unbalanced}`);
-    }
-
-    console.log('JWS = ' + jws);
-    return jws;
-}
-
-
-function shcToJws(shc: string, chunkCount = 1): { result: String, chunkIndex: number } | undefined {
+export default function shcToJws(shc: string, chunkCount = 1): { result: String, chunkIndex: number } | undefined {
 
     let chunked = chunkCount > 1;
     const qrHeader = 'shc:/';

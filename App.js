@@ -23,11 +23,11 @@ export default function App() {
     decode = shcToJws(data)
     alert('QR Code has been decoded.')
     console.log(decode)
-    decode = JSON.stringify(decode)
-    let payload;
-    console.log("Payload Validation")
-    payload = validate(decode)
-    console.log(payload)
+    // decode = JSON.stringify(decode)
+    // let payload;
+    // console.log("Payload Validation")
+    // payload = validate(decode)
+    // console.log(payload)
   };
 
   if (hasPermission === null) {
