@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import shcToJws from './qr';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -15,7 +16,12 @@ export default function App() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`QR Code has been scanned.  Type: ${type} || Data: ${data}`);
+    // alert(`QR Code has been scanned.  Type: ${type} || Data: ${data}`);
+    console.log(`Type: ${type} || Data: ${data}`)
+    let decode;
+    decode = shcToJws(data)
+    alert(`QR Code has been decoded. Data: ${decode}`)
+    console.log(`Data: ${decode}`)
   };
 
   if (hasPermission === null) {
