@@ -104,13 +104,17 @@ export function validate(jwsPayloadText: string): { result: String } {
         jwsPayloadText = jwsPayloadText.trim();
     }
 
-    const jwsPayload = utils.parseJson(jwsPayloadText);
+    const jwsPayload = JSON.parse(jwsPayloadText);
+    console.log(jwsPayload)
     if (!jwsPayload || typeof jwsPayload !== 'object') {
         console.log("Failed to parse JWS.payload data as JSON.");
         return jwsPayload
     }
     console.log("JWS Payload Contents:");
     console.log(beautify(jwsPayload, null as unknown as Array<string>, 3, 100));
+
+    // // failures will be recorded in the log. we can continue processing.
+    // validateSchema(jwsPayloadSchema, jwsPayload);
 
 
     // validate issuance date, if available - the schema check above will flag if missing/invalid
