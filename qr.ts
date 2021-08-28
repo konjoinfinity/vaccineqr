@@ -57,6 +57,10 @@ export default function shcToJws(shc: string, chunkCount = 1): { result: String,
     const b64Offset = '-'.charCodeAt(0);
     const digitPairs = shc.substring(bodyIndex).match(/(\d\d?)/g);
 
+    console.log(bodyIndex)
+    console.log(b64Offset)
+    console.log(digitPairs)
+
     if (digitPairs == null || digitPairs[digitPairs.length - 1].length == 1) {
         alert("Invalid numeric QR code, can't parse digit pairs. Numeric values should have even length.\n" +
             "Make sure no leading 0 are deleted from the encoding.");

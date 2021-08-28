@@ -20,8 +20,8 @@ export default function App() {
     console.log(`Type: ${type} || Data: ${data}`)
     let decode;
     decode = shcToJws(data)
-    alert(`QR Code has been decoded. Data: ${decode}`)
-    console.log(`Data: ${decode}`)
+    alert('QR Code has been decoded.')
+    console.log(decode)
   };
 
   if (hasPermission === null) {
