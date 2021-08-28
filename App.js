@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import shcToJws from './qr';
+import { validate } from './jwspayload';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -22,6 +23,10 @@ export default function App() {
     decode = shcToJws(data)
     alert('QR Code has been decoded.')
     console.log(decode)
+    let payload;
+    console.log("Payload Validation")
+    payload = validate(decode)
+    console.log(payload)
   };
 
   if (hasPermission === null) {
