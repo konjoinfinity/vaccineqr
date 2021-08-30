@@ -77,7 +77,7 @@ export const schema = jwsCompactSchema;
 const MAX_JWS_SINGLE_CHUNK_LENGTH = 1195;
 
 // Object or string?
-export async function validate(jws: string, index = '') {
+export async function validate(jws: any, index = '') {
 
     // the jws string is not JSON.  It is base64url.base64url.base64url
 
@@ -97,97 +97,101 @@ export async function validate(jws: string, index = '') {
         return console.log('Failed to parse JWS-compact data as \'base64url.base64url.base64url\' string.');
     }
 
-    // // failures will be recorded in the log. we can continue processing.
-    // validateSchema(jwsCompactSchema, jws);
+    // failures will be recorded in the log. we can continue processing.
+    console.log("validate schema")
+    validateSchema(jwsCompactSchema, jws);
 
-    // // split into header[0], payload[1], key[2]
-    // const parts = jws.split('.');
-    // const rawPayload = parts[1];
+    // split into header[0], payload[1], key[2]
+    const parts = jws.split('.');
+    const rawPayload = parts[1];
 
-    // // check header
-    // let headerBytes;
-    // let errString;
-    // try {
-    //     headerBytes = Buffer.from(parts[0], 'base64');
-    //     console.log('JWS.header = ' + headerBytes.toString());
-    // } catch (err) {
-    //     errString = err as string;
-    // } finally {
-    //     if (!headerBytes) {
-    //         console.log(["Error base64-decoding the JWS header.", errString].join('\n'));
-    //     }
-    // }
+    // check header
+    console.log("check header")
+    let headerBytes;
+    let errString;
+    try {
+        headerBytes = Buffer.from(parts[0], 'base64');
+        console.log('JWS.header = ' + headerBytes.toString());
+    } catch (err) {
+        errString = err as string;
+    } finally {
+        if (!headerBytes) {
+            console.log(["Error base64-decoding the JWS header.", errString].join('\n'));
+        }
+    }
 
-    // let headerJson;
-    // if (headerBytes) {
-    //     headerJson = parseJson<{ kid: string, alg: string, zip: string }>(headerBytes.toString());
+    let headerJson;
+    if (headerBytes) {
+        headerJson = parseJson<{ kid: string, alg: string, zip: string }>(headerBytes.toString());
 
-    //     if (headerJson == null) {
-    //         console.log(["Can't parse JWS header as JSON.", errString].join(''));
+        if (headerJson == null) {
+            console.log(["Can't parse JWS header as JSON.", errString].join(''));
 
-    //     } else {
-    //         const headerKeys = Object.keys(headerJson);
-    //         if (!headerKeys.includes('alg')) {
-    //             console.log("JWS header missing 'alg' property.");
-    //         } else if (headerJson['alg'] !== 'ES256') {
-    //             console.log(`Wrong value for JWS header property 'alg' property; expected: "ES256", actual: "${headerJson['alg']}".`);
-    //         }
-    //         if (!headerKeys.includes('zip')) {
-    //             console.log("JWS header missing 'zip' property.");
-    //         } else if (headerJson['zip'] !== 'DEF') {
-    //             console.log(`Wrong value for JWS header property 'zip' property; expected: "DEF", actual: "${headerJson['zip']}".`);
-    //         }
-    //         if (!headerKeys.includes('kid')) {
-    //             console.log("JWS header missing 'kid' property.");
-    //         }
+        } else {
+            const headerKeys = Object.keys(headerJson);
+            if (!headerKeys.includes('alg')) {
+                console.log("JWS header missing 'alg' property.");
+            } else if (headerJson['alg'] !== 'ES256') {
+                console.log(`Wrong value for JWS header property 'alg' property; expected: "ES256", actual: "${headerJson['alg']}".`);
+            }
+            if (!headerKeys.includes('zip')) {
+                console.log("JWS header missing 'zip' property.");
+            } else if (headerJson['zip'] !== 'DEF') {
+                console.log(`Wrong value for JWS header property 'zip' property; expected: "DEF", actual: "${headerJson['zip']}".`);
+            }
+            if (!headerKeys.includes('kid')) {
+                console.log("JWS header missing 'kid' property.");
+            }
 
-    //         // the value of the kid will be used in the crypto validation of the signature to select the issuer's public key
-    //     }
-    // }
+            // the value of the kid will be used in the crypto validation of the signature to select the issuer's public key
+        }
+        console.log(headerJson)
+    }
 
-    // // check signature format
-    // let sigBytes;
-    // try {
-    //     sigBytes = Buffer.from(parts[2], 'base64');
-    //     console.log('JWS.signature = ' + sigBytes.toString('hex'));
-    // } catch (err) {
-    //     console.log([
-    //         "Error base64-decoding the JWS signature.",
-    //         (err as string)].join('\n'));
-    // }
+    // check signature format
+    let sigBytes;
+    try {
+        sigBytes = Buffer.from(parts[2], 'base64');
+        console.log('JWS.signature = ' + sigBytes.toString('hex'));
+    } catch (err) {
+        console.log([
+            "Error base64-decoding the JWS signature.",
+            (err as string)].join('\n'));
+    }
 
-    // if (sigBytes && sigBytes.length > 64 && sigBytes[0] === 0x30 && sigBytes[2] === 0x02) {
+    if (sigBytes && sigBytes.length > 64 && sigBytes[0] === 0x30 && sigBytes[2] === 0x02) {
 
-    //     console.log("Signature appears to be in DER encoded form. Signature is expected to be 64-byte r||s concatenated form.\n" +
-    //         "See https://tools.ietf.org/html/rfc7515#appendix-A.3 for expected ES256 signature form.");
+        console.log("Signature appears to be in DER encoded form. Signature is expected to be 64-byte r||s concatenated form.\n" +
+            "See https://tools.ietf.org/html/rfc7515#appendix-A.3 for expected ES256 signature form.");
 
-    //     // DER encoded signature will constructed as follows:
-    //     // 0             |1                       |2            |3                 |4-35                       |36           |37                |38-69
-    //     // 0x30          |0x44                    |0x02         |0x20              |<r-component of signature> |0x02         |0x20 or 0x21      |<s-component of signature>
-    //     // Sequence-type |length-of-sequence-data |Integer-type |length-of-integer |integer-data               |Integer-type |length-of-integer |integer-data
+        // DER encoded signature will constructed as follows:
+        // 0             |1                       |2            |3                 |4-35                       |36           |37                |38-69
+        // 0x30          |0x44                    |0x02         |0x20              |<r-component of signature> |0x02         |0x20 or 0x21      |<s-component of signature>
+        // Sequence-type |length-of-sequence-data |Integer-type |length-of-integer |integer-data               |Integer-type |length-of-integer |integer-data
 
-    //     // sigBytes[3] contains length of r-integer; it may be 32 or 33 bytes.
-    //     // DER encoding dictates an Integer is negative if the high-order bit of the first byte is set. 
-    //     //   To represent an integer with a high-order bit as positive, a leading zero byte is required.
-    //     //   This increases the Integer length to 33. 
+        // sigBytes[3] contains length of r-integer; it may be 32 or 33 bytes.
+        // DER encoding dictates an Integer is negative if the high-order bit of the first byte is set. 
+        //   To represent an integer with a high-order bit as positive, a leading zero byte is required.
+        //   This increases the Integer length to 33. 
 
-    //     // For signature use, the sign is irrelevant and the leading zero, if present, is ignored.
-    //     const rStart = 4 + (sigBytes[3] - 32);  // adjust for the potential leading zero
-    //     const rBytes = sigBytes.slice(rStart, rStart + 32); // 32 bytes of the r-integer 
-    //     const sStart = sigBytes.length - 32;
-    //     const sBytes = sigBytes.slice(sStart); // 32 bytes of the s-integer
+        // For signature use, the sign is irrelevant and the leading zero, if present, is ignored.
+        const rStart = 4 + (sigBytes[3] - 32);  // adjust for the potential leading zero
+        const rBytes = sigBytes.slice(rStart, rStart + 32); // 32 bytes of the r-integer 
+        const sStart = sigBytes.length - 32;
+        const sBytes = sigBytes.slice(sStart); // 32 bytes of the s-integer
 
-    //     // Make Base64url
-    //     const newSig = Buffer.concat([rBytes, sBytes]).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    //     parts[2] = newSig;
+        // Make Base64url
+        const newSig = Buffer.concat([rBytes, sBytes]).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        parts[2] = newSig;
 
-    //     console.log("jws-signature converted from DER form to r||s form: " + newSig);
+        console.log("jws-signature converted from DER form to r||s form: " + newSig);
 
-    //     jws = parts.join('.');
+        jws = parts.join('.');
 
-    // } else if (sigBytes && sigBytes.length !== 64) {
-    //     console.log("Signature is " + sigBytes.length.toString() + "-bytes. Signature is expected to be 64-bytes");
-    // }
+    } else if (sigBytes && sigBytes.length !== 64) {
+        console.log("Signature is " + sigBytes.length.toString() + "-bytes. Signature is expected to be 64-bytes");
+    }
+
 
     // // check payload
     // let b64DecodedPayloadBuffer;

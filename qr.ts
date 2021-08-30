@@ -1,12 +1,13 @@
+import * as jws from "./jws-compact"
+
 const MAX_QR_CHUNK_LENGTH = 1191;
 
 export async function validate(qr: string[]) {
 
     const jwsString = shcChunksToJws(qr);
     console.log(jwsString)
-    // jwsString && await jws.validate(jwsString);
-    // console.log()
-    // return log;
+    jwsString && await jws.validate(jwsString);
+    return "next step";
 }
 
 
