@@ -110,63 +110,63 @@ export function validateSchema(schema: AnySchemaObject, data: object, pathPrefix
 
 
 // from a path, follow the schema to figure out a 'type'
-// export function objPathToSchema(path: string) : string {
+export function objPathToSchema(path: string): string {
 
-//     const schema: Schema = fhirSchema;
-//     const properties = path.split('.');
+    const schema: Schema = fhirSchema;
+    const properties = path.split('.');
 
-//     let p = schema.definitions[properties[0]];
-//     if(p == null) return 'unknown';
+    let p = schema.definitions[properties[0]];
+    if (p == null) return 'unknown';
 
 
-//     let t = properties[0];
+    let t = properties[0];
 
-//     for (let i = 1; i < properties.length; i++) {
+    for (let i = 1; i < properties.length; i++) {
 
-//         if (p.properties) {
+        if (p.properties) {
 
-//             p = p.properties[properties[i]];
+            p = p.properties[properties[i]];
 
-//             // this property is not valid according to the schema
-//             if (p == null) {
-//                 t = "unknown";
-//                 break;
-//             }
+            // this property is not valid according to the schema
+            if (p == null) {
+                t = "unknown";
+                break;
+            }
 
-//             // directly has a ref, then it is that type
-//             if (p.$ref) {
-//                 t = p.$ref.slice(p.$ref.lastIndexOf('/') + 1);
-//                 p = schema.definitions[t];
-//                 continue;
-//             }
+            // directly has a ref, then it is that type
+            if (p.$ref) {
+                t = p.$ref.slice(p.$ref.lastIndexOf('/') + 1);
+                p = schema.definitions[t];
+                continue;
+            }
 
-//             // has and items prop of ref, then it is an array of that type
-//             if (p.items && '$ref' in p.items) {
-//                 t = p.items.$ref.slice(p.items.$ref.lastIndexOf('/') + 1);
-//                 p = schema.definitions[t];
-//                 continue;
-//             }
+            // has and items prop of ref, then it is an array of that type
+            if (p.items && '$ref' in p.items) {
+                t = p.items.$ref.slice(p.items.$ref.lastIndexOf('/') + 1);
+                p = schema.definitions[t];
+                continue;
+            }
 
-//             // has and items prop of ref, then it is an array of that type
-//             if (p.enum) {
-//                 t = "enum";
-//                 continue;
-//             }
-//         }
+            // has and items prop of ref, then it is an array of that type
+            if (p.enum) {
+                t = "enum";
+                continue;
+            }
+        }
 
-//         if (p.const) {
-//             t = 'const';
-//             continue;
-//         }
+        if (p.const) {
+            t = 'const';
+            continue;
+        }
 
-//         if (p.type) {
-//             t = p.type;
-//             continue;
-//         }
+        if (p.type) {
+            t = p.type;
+            continue;
+        }
 
-//         throw new Error('Should not get here.');
-//     }
+        throw new Error('Should not get here.');
+    }
 
-//     return t;
+    return t;
 
-// }
+}

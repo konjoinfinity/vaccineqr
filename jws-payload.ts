@@ -96,7 +96,7 @@ export function validate(jwsPayloadText: string) {
     const hasImmunizationType = jwsPayload?.vc?.type?.includes(supportedTypes.immunization);
     const hasLaboratoryType = jwsPayload?.vc?.type?.includes(supportedTypes.laboratory);
     const hasCovidType = jwsPayload?.vc?.type?.includes(supportedTypes.covid19);
-    const hasVerifiableCredential = jwsPayload?.vc?.type?.includes(supportedTypes.vc);
+    // const hasVerifiableCredential = jwsPayload?.vc?.type?.includes(supportedTypes.vc);
 
     if (hasImmunization && !hasImmunizationType) {
         console.log(`JWS.payload.vc.type SHOULD contain '${supportedTypes.immunization}'`);
@@ -114,10 +114,10 @@ export function validate(jwsPayloadText: string) {
         console.log(`JWS.payload.vc.type SHOULD NOT contain '${supportedTypes.covid19}', no covid immunization or observation found`);
     }
 
-    if (hasVerifiableCredential) {
-        console.log(`JWS.payload.vc.type : '${supportedTypes.vc}' is not required and may be omitted to conserve space`);
+    // if (hasVerifiableCredential) {
+    //     console.log(`JWS.payload.vc.type : '${supportedTypes.vc}' is not required and may be omitted to conserve space`);
 
-    }
+    // }
 
     jwsPayload?.vc?.type && jwsPayload?.vc?.type.forEach(t => {
         if (!Object.values(supportedTypes).includes(t)) {

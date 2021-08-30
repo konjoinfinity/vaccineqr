@@ -230,61 +230,61 @@ export async function validate(jws: any, index = '') {
 
     // try to validate the payload (even if inflation failed)
     const payloadLog = jwsPayload.validate(inflatedPayload || b64DecodedPayloadString || rawPayload);
-    var log;
-    log.child.push(payloadLog);
-    return log;
+
+    console.log(payloadLog);
+
+
+    // try-parse the JSON even if it failed validation above
+    const payload = parseJson<JWSPayload>(inflatedPayload || b64DecodedPayloadString || rawPayload);
+    console.log(payload)
+
+    // if we did not get a payload back, it failed to be parsed and we cannot extract the key url
+    // so we can stop.
+    // the jws-payload child will contain the parse errors.
+    // The payload validation may have a Fatal error
+    if (!payload) {
+        console.log("payload error");
+    }
+
+
+    // Extract the key url
+    if (payload.iss) {
+        if (typeof payload.iss === 'string') {
+
+            if (payload.iss.slice(0, 8) !== 'https://') {
+                console.log("Issuer URL SHALL use https");
+            }
+
+            if (payload.iss.slice(-1) === '/') {
+                console.log("Issuer URL SHALL NOT include a trailing /");
+            }
+
+            // download the keys into the keystore. if it fails, continue an try to use whatever is in the keystore.
+            if (!JwsValidationOptions.skipJwksDownload) {
+                await downloadAndImportKey(payload.iss);
+            } else {
+                console.log("skipping issuer JWK set download");
+            }
+
+            // check if the iss URL is part of a trust framework
+            if (TrustedIssuerDirectory.directoryURL) {
+                checkTrustedIssuerDirectory(payload.iss);
+            }
+        } else {
+            console.log(`JWS payload 'iss' should be a string, not a ${typeof payload.iss}`);
+        }
+
+    } else {
+        // continue, since we might have the key we need in the global keystore
+        console.log("Can't find 'iss' entry in JWS payload");
+    }
+
+    if (headerJson && await verifyJws(jws, headerJson['kid'])) {
+        console.log("JWS signature verified");
+    }
+
+    return console.log(jws)
 }
-
-// // try-parse the JSON even if it failed validation above
-// const payload = parseJson<JWSPayload>(inflatedPayload || b64DecodedPayloadString || rawPayload);
-
-// // if we did not get a payload back, it failed to be parsed and we cannot extract the key url
-// // so we can stop.
-// // the jws-payload child will contain the parse errors.
-// // The payload validation may have a Fatal error
-// if (!payload) {
-//     return log;
-// }
-
-
-// // Extract the key url
-// if (payload.iss) {
-//     if (typeof payload.iss === 'string') {
-
-//         if (payload.iss.slice(0, 8) !== 'https://') {
-//             console.log("Issuer URL SHALL use https");
-//         }
-
-//         if (payload.iss.slice(-1) === '/') {
-//             console.log("Issuer URL SHALL NOT include a trailing /");
-//         }
-
-//         // download the keys into the keystore. if it fails, continue an try to use whatever is in the keystore.
-//         if (!JwsValidationOptions.skipJwksDownload) {
-//             await downloadAndImportKey(payload.iss);
-//         } else {
-//             console.log("skipping issuer JWK set download");
-//         }
-
-//         // check if the iss URL is part of a trust framework
-//         if (TrustedIssuerDirectory.directoryURL) {
-//             checkTrustedIssuerDirectory(payload.iss);
-//         }
-//     } else {
-//         console.log(`JWS payload 'iss' should be a string, not a ${typeof payload.iss}`);
-//     }
-
-// } else {
-//     // continue, since we might have the key we need in the global keystore
-//     console.log("Can't find 'iss' entry in JWS payload");
-// }
-
-// if (headerJson && await verifyJws(jws, headerJson['kid'])) {
-//     console.log("JWS signature verified");
-// }
-
-// return console.log(jws)
-// }
 
 
 // async function downloadAndImportKey(issuerURL: string): Promise<keys.KeySet | undefined> {
@@ -320,23 +320,23 @@ export async function validate(jws: any, index = '') {
 //     }
 // }
 
-async function verifyJws(jws: string, kid: string): Promise<boolean> {
+// async function verifyJws(jws: string, kid: string): Promise<boolean> {
 
-    const verifier: jose.JWS.Verifier = jose.JWS.createVerify(keys.store);
+//     const verifier: jose.JWS.Verifier = jose.JWS.createVerify(keys.store);
 
-    if (kid && !keys.store.get(kid)) {
-        console.log(`JWS verification failed: can't find key with 'kid' = ${kid} in issuer set`);
-        return false;
-    }
-    try {
-        await verifier.verify(jws);
-        return true;
-    } catch (error) {
-        // The error message is always 'no key found', regardless if a key is missing or
-        // if the signature was tempered with. Don't return the node-jose error message.
-        console.log('JWS verification failed');
-        return false;
-    }
+//     if (kid && !keys.store.get(kid)) {
+//         console.log(`JWS verification failed: can't find key with 'kid' = ${kid} in issuer set`);
+//         return false;
+//     }
+//     try {
+//         await verifier.verify(jws);
+//         return true;
+//     } catch (error) {
+//         // The error message is always 'no key found', regardless if a key is missing or
+//         // if the signature was tempered with. Don't return the node-jose error message.
+//         console.log('JWS verification failed');
+//         return false;
+//     }
 
-}
+// }
 
