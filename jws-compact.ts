@@ -191,98 +191,100 @@ export async function validate(jws: any, index = '') {
     } else if (sigBytes && sigBytes.length !== 64) {
         console.log("Signature is " + sigBytes.length.toString() + "-bytes. Signature is expected to be 64-bytes");
     }
+    console.log(sigBytes)
 
 
-    // // check payload
-    // let b64DecodedPayloadBuffer;
-    // let b64DecodedPayloadString;
-    // try {
-    //     b64DecodedPayloadBuffer = Buffer.from(rawPayload, 'base64');
-    // } catch (err) {
-    //     console.log([
-    //         "Error base64-decoding the JWS payload.",
-    //         (err as string)].join('\n'));
-    // }
-    // let inflatedPayload;
-    // if (b64DecodedPayloadBuffer) {
-    //     try {
-    //         inflatedPayload = pako.inflateRaw(b64DecodedPayloadBuffer, { to: 'string' });
-    //         console.log('JWS payload inflated');
-    //     } catch (err) {
-    //         // try normal inflate
-    //         try {
-    //             inflatedPayload = pako.inflate(b64DecodedPayloadBuffer, { to: 'string' });
-    //             console.log(
-    //                 "Error inflating JWS payload. Compression should use raw DEFLATE (without wrapper header and adler32 crc)",
-    //                 );
-    //         } catch (err) {
-    //             console.log(
-    //                 ["Error inflating JWS payload. Did you use raw DEFLATE compression?",
-    //                     (err as string)].join('\n'),
-    //                 );
-    //             // inflating failed, let's try to parse the base64-decoded string directly
-    //             b64DecodedPayloadString = b64DecodedPayloadBuffer.toString('utf-8');
-    //         }
-    //     }
-    // }
+    // check payload
+    let b64DecodedPayloadBuffer;
+    let b64DecodedPayloadString;
+    try {
+        b64DecodedPayloadBuffer = Buffer.from(rawPayload, 'base64');
+    } catch (err) {
+        console.log([
+            "Error base64-decoding the JWS payload.",
+            (err as string)].join('\n'));
+    }
+    let inflatedPayload;
+    if (b64DecodedPayloadBuffer) {
+        try {
+            inflatedPayload = pako.inflateRaw(b64DecodedPayloadBuffer, { to: 'string' });
+            console.log('JWS payload inflated');
+        } catch (err) {
+            // try normal inflate
+            try {
+                inflatedPayload = pako.inflate(b64DecodedPayloadBuffer, { to: 'string' });
+                console.log(
+                    "Error inflating JWS payload. Compression should use raw DEFLATE (without wrapper header and adler32 crc)",
+                );
+            } catch (err) {
+                console.log(
+                    ["Error inflating JWS payload. Did you use raw DEFLATE compression?",
+                        (err as string)].join('\n'),
+                );
+                // inflating failed, let's try to parse the base64-decoded string directly
+                b64DecodedPayloadString = b64DecodedPayloadBuffer.toString('utf-8');
+            }
+        }
+    }
+    console.log(inflatedPayload)
 
-    // // try to validate the payload (even if inflation failed)
-    // const payloadLog = jwsPayload.validate(inflatedPayload || b64DecodedPayloadString || rawPayload);
-    // var log;
-    // log.child.push(payloadLog);
-    //     return log;
-    // }
-
-    // // try-parse the JSON even if it failed validation above
-    // const payload = parseJson<JWSPayload>(inflatedPayload || b64DecodedPayloadString || rawPayload);
-
-    // // if we did not get a payload back, it failed to be parsed and we cannot extract the key url
-    // // so we can stop.
-    // // the jws-payload child will contain the parse errors.
-    // // The payload validation may have a Fatal error
-    // if (!payload) {
-    //     return log;
-    // }
-
-
-    // // Extract the key url
-    // if (payload.iss) {
-    //     if (typeof payload.iss === 'string') {
-
-    //         if (payload.iss.slice(0, 8) !== 'https://') {
-    //             console.log("Issuer URL SHALL use https");
-    //         }
-
-    //         if (payload.iss.slice(-1) === '/') {
-    //             console.log("Issuer URL SHALL NOT include a trailing /");
-    //         }
-
-    //         // download the keys into the keystore. if it fails, continue an try to use whatever is in the keystore.
-    //         if (!JwsValidationOptions.skipJwksDownload) {
-    //             await downloadAndImportKey(payload.iss);
-    //         } else {
-    //             console.log("skipping issuer JWK set download");
-    //         }
-
-    //         // check if the iss URL is part of a trust framework
-    //         if (TrustedIssuerDirectory.directoryURL) {
-    //             checkTrustedIssuerDirectory(payload.iss);
-    //         }
-    //     } else {
-    //         console.log(`JWS payload 'iss' should be a string, not a ${typeof payload.iss}`);
-    //     }
-
-    // } else {
-    //     // continue, since we might have the key we need in the global keystore
-    //     console.log("Can't find 'iss' entry in JWS payload");
-    // }
-
-    // if (headerJson && await verifyJws(jws, headerJson['kid'])) {
-    //     console.log("JWS signature verified");
-    // }
-
-    return console.log(jws)
+    // try to validate the payload (even if inflation failed)
+    const payloadLog = jwsPayload.validate(inflatedPayload || b64DecodedPayloadString || rawPayload);
+    var log;
+    log.child.push(payloadLog);
+    return log;
 }
+
+// // try-parse the JSON even if it failed validation above
+// const payload = parseJson<JWSPayload>(inflatedPayload || b64DecodedPayloadString || rawPayload);
+
+// // if we did not get a payload back, it failed to be parsed and we cannot extract the key url
+// // so we can stop.
+// // the jws-payload child will contain the parse errors.
+// // The payload validation may have a Fatal error
+// if (!payload) {
+//     return log;
+// }
+
+
+// // Extract the key url
+// if (payload.iss) {
+//     if (typeof payload.iss === 'string') {
+
+//         if (payload.iss.slice(0, 8) !== 'https://') {
+//             console.log("Issuer URL SHALL use https");
+//         }
+
+//         if (payload.iss.slice(-1) === '/') {
+//             console.log("Issuer URL SHALL NOT include a trailing /");
+//         }
+
+//         // download the keys into the keystore. if it fails, continue an try to use whatever is in the keystore.
+//         if (!JwsValidationOptions.skipJwksDownload) {
+//             await downloadAndImportKey(payload.iss);
+//         } else {
+//             console.log("skipping issuer JWK set download");
+//         }
+
+//         // check if the iss URL is part of a trust framework
+//         if (TrustedIssuerDirectory.directoryURL) {
+//             checkTrustedIssuerDirectory(payload.iss);
+//         }
+//     } else {
+//         console.log(`JWS payload 'iss' should be a string, not a ${typeof payload.iss}`);
+//     }
+
+// } else {
+//     // continue, since we might have the key we need in the global keystore
+//     console.log("Can't find 'iss' entry in JWS payload");
+// }
+
+// if (headerJson && await verifyJws(jws, headerJson['kid'])) {
+//     console.log("JWS signature verified");
+// }
+
+// return console.log(jws)
+// }
 
 
 // async function downloadAndImportKey(issuerURL: string): Promise<keys.KeySet | undefined> {

@@ -5,7 +5,7 @@ const MAX_QR_CHUNK_LENGTH = 1191;
 export async function validate(qr: string[]) {
 
     const jwsString = shcChunksToJws(qr);
-    console.log(jwsString)
+    // console.log(jwsString)
     jwsString && await jws.validate(jwsString);
     return "next step";
 }

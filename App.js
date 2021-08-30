@@ -23,7 +23,7 @@ export default function App() {
     // var decode = shcChunksToJws(shc)
     var decode = validate(shc)
     alert('QR Code has been decoded.')
-    console.log(decode)
+    // console.log(decode)
     // console.log("Payload Validation")
     // var payload = validate(decode.result)
     // console.log(payload)
