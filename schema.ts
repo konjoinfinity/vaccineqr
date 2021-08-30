@@ -26,8 +26,8 @@ export async function initKeyStoreFromFile(filePath: string): Promise<JWK.KeySto
 
 const schemaCache: Record<string, AnyValidateFunction> = {};
 
-
-export function validateSchema(schema: AnySchemaObject, data: FhirBundle | JWS | JWSPayload | HealthCard | KeySet | Resource, pathPrefix = ''): boolean {
+// FhirBundle | JWS | JWSPayload | HealthCard | KeySet | Resource
+export function validateSchema(schema: AnySchemaObject, data: object, pathPrefix = ''): boolean {
 
     // by default, the validator will stop at the first failure. 'allErrors' allows it to keep going.
     const schemaId = (schema as { [key: string]: string })["$id"] || (schema as { [key: string]: string })["$ref"];
@@ -90,7 +90,7 @@ export function validateSchema(schema: AnySchemaObject, data: FhirBundle | JWS |
 
         errors.forEach(ve => {
 
-            log.error(ve, isFhirSchema ? ErrorCode.FHIR_SCHEMA_ERROR : ErrorCode.SCHEMA_ERROR);
+            console.log(ve);
 
         });
 
@@ -100,9 +100,9 @@ export function validateSchema(schema: AnySchemaObject, data: FhirBundle | JWS |
         const missingRef = (err as { "missingRef": string }).missingRef;
         if (missingRef) {
             const property = (err as { "missingRef": string }).missingRef.split('/').pop() as string;
-            log.error(`Schema: ${pathPrefix + property} additional property '${property}' not allowed`);
+            console.log(`Schema: ${pathPrefix + property} additional property '${property}' not allowed`);
         } else {
-            log.error('Schema: ' + (err as Error).message, isFhirSchema ? ErrorCode.FHIR_SCHEMA_ERROR : ErrorCode.SCHEMA_ERROR);
+            console.log('Schema: ' + (err as Error).message);
         }
         return false;
     }
