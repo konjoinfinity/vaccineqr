@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import shcToJws from './qr';
+import { shcToJws, shcChunksToJws } from './qr';
 import { validate } from './jwspayload';
 
 export default function App() {
@@ -19,14 +19,12 @@ export default function App() {
     setScanned(true);
     // alert(`QR Code has been scanned.  Type: ${type} || Data: ${data}`);
     console.log(`Type: ${type} || Data: ${data}`)
-    let decode;
-    decode = shcToJws(data)
+    var shc = [`${data}`]
+    var decode = shcChunksToJws(shc)
     alert('QR Code has been decoded.')
     console.log(decode)
-    // decode = JSON.stringify(decode)
-    // let payload;
     // console.log("Payload Validation")
-    // payload = validate(decode)
+    // var payload = validate(decode.result)
     // console.log(payload)
   };
 
