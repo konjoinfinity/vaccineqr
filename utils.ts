@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import path from 'path';
+// import path from 'path';
 import pako from 'pako';
 import jose from 'node-jose';
+import execa from 'execa';
 
 export function parseJson(json: string) {
     try {
@@ -31,6 +32,14 @@ export function inflatePayload(verificationResult: jose.JWS.VerificationResult):
     return payload;
 }
 
+export function isOpensslAvailable(): boolean {
+    try {
+        const result = execa.commandSync("openssl version");
+        return (result.exitCode == 0);
+    } catch (err) {
+        return false;
+    }
+}
 
 // get an object property using a string path
 

@@ -249,6 +249,7 @@ export async function validate(jws: any, index = '') {
 
     // Extract the key url
     if (payload.iss) {
+        console.log("Issuer: " + payload.iss)
         if (typeof payload.iss === 'string') {
 
             if (payload.iss.slice(0, 8) !== 'https://') {
