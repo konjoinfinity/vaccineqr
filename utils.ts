@@ -4,7 +4,7 @@
 // import path from 'path';
 import pako from 'pako';
 import jose from 'node-jose';
-import execa from 'execa';
+// import execa from 'execa';
 
 export function parseJson(json: string) {
     try {
@@ -34,8 +34,10 @@ export function inflatePayload(verificationResult: jose.JWS.VerificationResult):
 
 export function isOpensslAvailable(): boolean {
     try {
-        const result = execa.commandSync("openssl version");
-        return (result.exitCode == 0);
+        // const result = execa.commandSync("openssl version");
+        const result = true
+        return result;
+        // return (result.exitCode == 0);
     } catch (err) {
         return false;
     }

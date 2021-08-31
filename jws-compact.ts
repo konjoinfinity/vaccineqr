@@ -5,9 +5,11 @@ import { validateSchema } from './schema';
 import * as jwsPayload from './jws-payload';
 import * as keys from './keys';
 import pako from 'pako';
-import got from 'got';
+// import got from 'got';
+import axios from "axios"
 import { jose, JWK } from 'node-jose';
 import { parseJson } from './utils';
+import { verifyAndImportHealthCardIssuerKey } from "./shcKeyValidator"
 
 
 
@@ -288,56 +290,56 @@ export async function validate(jws: any, index = '') {
 }
 
 
-// async function downloadAndImportKey(issuerURL: string): Promise<keys.KeySet | undefined> {
+async function downloadAndImportKey(issuerURL: string): Promise<keys.KeySet | undefined> {
 
-//     const jwkURL = issuerURL + '/.well-known/jwks.json';
-//     console.log("Retrieving issuer key from " + jwkURL);
-//     const requestedOrigin = 'https://example.org'; // request bogus origin to test CORS response
-//     try {
-//         const response = await got(jwkURL, { headers: { Origin: requestedOrigin }, timeout: JwsValidationOptions.jwksDownloadTimeOut });
-//         // we expect a CORS response header consistent with the requested origin (either allow all '*' or the specific origin)
-//         // TODO: can we easily add a unit test for this?
-//         const acaoHeader = response.headers['access-control-allow-origin'];
-//         if (!acaoHeader) {
-//             console.log("Issuer key endpoint does not contain a 'access-control-allow-origin' header for Cross-Origin Resource Sharing (CORS)");
-//         } else if (acaoHeader !== '*' && acaoHeader !== requestedOrigin) {
-//             console.log(`Issuer key endpoint's 'access-control-allow-origin' header ${acaoHeader} does not match the requested origin ${requestedOrigin}, for Cross-Origin Resource Sharing (CORS)`);
-//         }
-//         try {
-//             const keySet = parseJson<keys.KeySet>(response.body);
-//             if (!keySet) {
-//                 throw "Failed to parse JSON KeySet schema";
-//             }
-//             console.log("Downloaded issuer key(s) : ");
-//             await verifyAndImportHealthCardIssuerKey(keySet, issuerURL);
-//             return keySet;
-//         } catch (err) {
-//             console.log("Can't parse downloaded issuer JWK set: " + (err as Error).toString());
-//             return undefined;
-//         }
-//     } catch (err) {
-//         console.log("Failed to download issuer JWK set: " + (err as Error).toString());
-//         return undefined;
-//     }
-// }
+    const jwkURL = issuerURL + '/.well-known/jwks.json';
+    console.log("Retrieving issuer key from " + jwkURL);
+    const requestedOrigin = 'https://example.org'; // request bogus origin to test CORS response
+    try {
+        const response = await axios(jwkURL, { headers: { Origin: requestedOrigin }, timeout: JwsValidationOptions.jwksDownloadTimeOut });
+        // we expect a CORS response header consistent with the requested origin (either allow all '*' or the specific origin)
+        // TODO: can we easily add a unit test for this?
+        const acaoHeader = response.headers['access-control-allow-origin'];
+        if (!acaoHeader) {
+            console.log("Issuer key endpoint does not contain a 'access-control-allow-origin' header for Cross-Origin Resource Sharing (CORS)");
+        } else if (acaoHeader !== '*' && acaoHeader !== requestedOrigin) {
+            console.log(`Issuer key endpoint's 'access-control-allow-origin' header ${acaoHeader} does not match the requested origin ${requestedOrigin}, for Cross-Origin Resource Sharing (CORS)`);
+        }
+        try {
+            const keySet = parseJson<keys.KeySet>(response);
+            if (!keySet) {
+                throw "Failed to parse JSON KeySet schema";
+            }
+            console.log("Downloaded issuer key(s) : ");
+            await verifyAndImportHealthCardIssuerKey(keySet, issuerURL);
+            return keySet;
+        } catch (err) {
+            console.log("Can't parse downloaded issuer JWK set: " + (err as Error).toString());
+            return undefined;
+        }
+    } catch (err) {
+        console.log("Failed to download issuer JWK set: " + (err as Error).toString());
+        return undefined;
+    }
+}
 
-// async function verifyJws(jws: string, kid: string): Promise<boolean> {
+async function verifyJws(jws: string, kid: string): Promise<boolean> {
 
-//     const verifier: jose.JWS.Verifier = jose.JWS.createVerify(keys.store);
+    const verifier: jose.JWS.Verifier = jose.JWS.createVerify(keys.store);
 
-//     if (kid && !keys.store.get(kid)) {
-//         console.log(`JWS verification failed: can't find key with 'kid' = ${kid} in issuer set`);
-//         return false;
-//     }
-//     try {
-//         await verifier.verify(jws);
-//         return true;
-//     } catch (error) {
-//         // The error message is always 'no key found', regardless if a key is missing or
-//         // if the signature was tempered with. Don't return the node-jose error message.
-//         console.log('JWS verification failed');
-//         return false;
-//     }
+    if (kid && !keys.store.get(kid)) {
+        console.log(`JWS verification failed: can't find key with 'kid' = ${kid} in issuer set`);
+        return false;
+    }
+    try {
+        await verifier.verify(jws);
+        return true;
+    } catch (error) {
+        // The error message is always 'no key found', regardless if a key is missing or
+        // if the signature was tempered with. Don't return the node-jose error message.
+        console.log('JWS verification failed');
+        return false;
+    }
 
-// }
+}
 
