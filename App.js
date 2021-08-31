@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { shcToJws, shcChunksToJws, validate } from './qr';
+// import { shcToJws, shcChunksToJws, validate } from './qr';
 // import validate from './jws-compact';
+import axios from 'axios';
+// import { validate } from 'health-cards-validation-sdk/js/src/api.js'
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -20,9 +22,18 @@ export default function App() {
     // alert(`QR Code has been scanned.  Type: ${type} || Data: ${data}`);
     console.log(`Type: ${type} || Data: ${data}`)
     var shc = [`${data}`]
+    // const jwsString = 'eyJ6aXAiOiJ...';
+    // const results = validate.shc(data);
+    // results.then(console.log)
+    axios.post("http://1ad1-4-79-23-114.ngrok.io", { data: shc })
+      .then(res => res.json())
+      .then(res => {
+        // console.log(res)
+      }).catch(error => console.log(error));;
+
     // var decode = shcChunksToJws(shc)
-    var decode = validate(shc)
-    alert('QR Code has been decoded.')
+    // var decode = validate(shc)
+    // alert('QR Code has been decoded.')
     // console.log(decode)
     // console.log("Payload Validation")
     // var payload = validate(decode.result)

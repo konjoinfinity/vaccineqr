@@ -25,6 +25,7 @@
     "expo-status-bar": "~1.0.4",
     "got": "^11.8.2",
     "graceful-fs": "^4.2.8",
+    "health-cards-validation-sdk": "smart-on-fhir/health-cards-validation-SDK",
     "jimp": "^0.16.1",
     "json-beautify": "^1.1.1",
     "jsqr": "^1.4.0",

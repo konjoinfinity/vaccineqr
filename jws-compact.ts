@@ -9,7 +9,7 @@ import pako from 'pako';
 import axios from "axios"
 import { jose, JWK } from 'node-jose';
 import { parseJson } from './utils';
-import { verifyAndImportHealthCardIssuerKey } from "./shcKeyValidator"
+// import { verifyAndImportHealthCardIssuerKey } from "./shcKeyValidator"
 
 
 
@@ -311,7 +311,7 @@ async function downloadAndImportKey(issuerURL: string): Promise<keys.KeySet | un
                 throw "Failed to parse JSON KeySet schema";
             }
             console.log("Downloaded issuer key(s) : ");
-            await verifyAndImportHealthCardIssuerKey(keySet, issuerURL);
+            // await verifyAndImportHealthCardIssuerKey(keySet, issuerURL);
             return keySet;
         } catch (err) {
             console.log("Can't parse downloaded issuer JWK set: " + (err as Error).toString());
