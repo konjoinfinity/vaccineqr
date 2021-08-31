@@ -25,7 +25,7 @@ export default function App() {
     // const jwsString = 'eyJ6aXAiOiJ...';
     // const results = validate.shc(data);
     // results.then(console.log)
-    axios.post("http://1ad1-4-79-23-114.ngrok.io", { data: shc })
+    axios.post("http://72af-4-79-23-114.ngrok.io", { data: shc })
       .then(res => res.json())
       .then(res => {
         // console.log(res)
