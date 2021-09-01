@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Alert, Modal, TouchableHighlight } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert, Modal, TouchableHighlight, Dimensions } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 // import { shcToJws, shcChunksToJws, validate } from './qr';
 // import validate from './jws-compact';
@@ -32,7 +32,7 @@ export default function App() {
     //   .then(res => console.log(res.json(data)))
     //   .catch(error => console.log(error));;
 
-    axios.post("http://4aea-4-79-23-114.ngrok.io", {
+    axios.post("http://d813-4-79-23-114.ngrok.io", {
       data: shc
     })
       .then(function (response) {
@@ -66,7 +66,7 @@ export default function App() {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {/* {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />} */}
       <View style={styles.centeredView}>
         <Modal
           style={redOrGreen == true ? { backgroundColor: "#A5D6A7" } : { backgroundColor: "#FF8A65" }}
@@ -78,14 +78,15 @@ export default function App() {
           }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-
+              {redOrGreen == true ?
+                <Text style={{ color: "#A5D6A7", marginBottom: Dimensions.get('window').height * 0.06, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
+                  QR Code has been validated.</Text> :
+                <Text style={{ color: "#FF8A65", marginBottom: Dimensions.get('window').height * 0.06, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
+                  QR Code is invalid.</Text>}
               <TouchableHighlight
                 style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                }}>
-                {redOrGreen == true ? <Text style={styles.textStyle}>Valid</Text> : <Text style={styles.textStyle}>Invalid</Text>}
+                onPress={() => { setModalVisible(!modalVisible); setScanned(false) }}>
+                <Text style={styles.textStyle}>Tap to Scan Again</Text>
               </TouchableHighlight>
             </View>
           </View>
@@ -109,6 +110,8 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
+    height: Dimensions.get('window').height * 0.75,
+    width: Dimensions.get('window').width * 0.75,
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -127,15 +130,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#F194FF',
     borderRadius: 20,
     padding: 10,
-    elevation: 2,
+    // elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 10,
   },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: Dimensions.get('window').height * 0.03,
+    padding: Dimensions.get('window').height * 0.05
   },
   modalText: {
     marginBottom: 15,
+    paddingBottom: Dimensions.get('window').width * 0.2,
     textAlign: 'center',
+    fontSize: Dimensions.get('window').height * 0.06
   }
 });
