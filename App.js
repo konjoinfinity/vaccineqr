@@ -27,7 +27,7 @@ export default function App() {
     setScanned(true);
     console.log(`Type: ${type} || Data: ${data}`)
     var shc = [`${data}`]
-    axios.post("http://3913-4-79-23-114.ngrok.io", {
+    axios.post("http://7904-4-79-23-114.ngrok.io", {
       data: shc
     })
       .then(function (response) {
