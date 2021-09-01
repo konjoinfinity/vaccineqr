@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Alert, Modal, TouchableHighlight, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Alert, Modal, TouchableHighlight, Dimensions } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-// import { shcToJws, shcChunksToJws, validate } from './qr';
-// import validate from './jws-compact';
 import axios from 'axios';
-// import { validate } from 'health-cards-validation-sdk/js/src/api.js'
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -22,16 +19,8 @@ export default function App() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    // alert(`QR Code has been scanned.  Type: ${type} || Data: ${data}`);
     console.log(`Type: ${type} || Data: ${data}`)
     var shc = [`${data}`]
-    // const jwsString = 'eyJ6aXAiOiJ...';
-    // const results = validate.shc(data);
-    // results.then(console.log)
-    // axios.post("http://045e-4-79-23-114.ngrok.io", { data: shc }, response)
-    //   .then(res => console.log(res.json(data)))
-    //   .catch(error => console.log(error));;
-
     axios.post("http://d813-4-79-23-114.ngrok.io", {
       data: shc
     })
@@ -43,14 +32,6 @@ export default function App() {
       .catch(function (error) {
         console.log(error);
       });
-
-    // var decode = shcChunksToJws(shc)
-    // var decode = validate(shc)
-    // alert('QR Code has been decoded.')
-    // console.log(decode)
-    // console.log("Payload Validation")
-    // var payload = validate(decode.result)
-    // console.log(payload)
   };
 
   if (hasPermission === null) {
@@ -64,18 +45,14 @@ export default function App() {
     <View style={styles.container}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {/* {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />} */}
+        style={StyleSheet.absoluteFillObject} />
       <View style={styles.centeredView}>
         <Modal
           style={redOrGreen == true ? { backgroundColor: "#A5D6A7" } : { backgroundColor: "#FF8A65" }}
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
+          onRequestClose={() => { Alert.alert('Modal has been closed.') }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               {redOrGreen == true ?
@@ -130,7 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F194FF',
     borderRadius: 20,
     padding: 10,
-    // elevation: 2,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
