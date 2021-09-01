@@ -3,6 +3,9 @@ import { Text, View, StyleSheet, Alert, Modal, TouchableHighlight, Dimensions } 
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 
+// let scanx = Dimensions.get('window').width * 0.75;
+// let scany = Dimensions.get('window').height * 0.75;
+
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -17,11 +20,14 @@ export default function App() {
   }, []);
 
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ type, data, bounds }) => {
+    // console.log(bounds.origin)
+    // scanx = bounds.origin.x
+    // scany = bounds.origin.y
     setScanned(true);
     console.log(`Type: ${type} || Data: ${data}`)
     var shc = [`${data}`]
-    axios.post("http://d813-4-79-23-114.ngrok.io", {
+    axios.post("http://3913-4-79-23-114.ngrok.io", {
       data: shc
     })
       .then(function (response) {
