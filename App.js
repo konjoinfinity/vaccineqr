@@ -25,11 +25,21 @@ export default function App() {
     // const jwsString = 'eyJ6aXAiOiJ...';
     // const results = validate.shc(data);
     // results.then(console.log)
-    axios.post("http://72af-4-79-23-114.ngrok.io", { data: shc })
-      .then(res => res.json())
-      .then(res => {
-        // console.log(res)
-      }).catch(error => console.log(error));;
+    // axios.post("http://045e-4-79-23-114.ngrok.io", { data: shc }, response)
+    //   .then(res => console.log(res.json(data)))
+    //   .catch(error => console.log(error));;
+
+    axios.post("http://045e-4-79-23-114.ngrok.io", {
+      data: shc
+    })
+      .then(function (response) {
+        console.log(response.data)
+        response.data ? console.log("Valid") : console.log("Invalid")
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
     // var decode = shcChunksToJws(shc)
     // var decode = validate(shc)
