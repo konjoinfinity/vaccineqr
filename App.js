@@ -21,13 +21,10 @@ export default function App() {
 
 
   const handleBarCodeScanned = ({ type, data, bounds }) => {
-    // console.log(bounds.origin)
-    // scanx = bounds.origin.x
-    // scany = bounds.origin.y
     setScanned(true);
     console.log(`Type: ${type} || Data: ${data}`)
-    var shc = [`${data}`]
-    axios.post("http://7904-4-79-23-114.ngrok.io", {
+    var shc = `${data}`
+    axios.post("https://vaccineqr.herokuapp.com/", {
       data: shc
     })
       .then(function (response) {
