@@ -11,6 +11,7 @@ export default function App() {
   const [scanned, setScanned] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [redOrGreen, setredOrGreen] = useState(true)
+  const [resMessage, setresMessage] = useState(null)
 
   useEffect(() => {
     (async () => {
@@ -30,6 +31,10 @@ export default function App() {
       .then(function (response) {
         console.log(response.data);
         response.data.data == true ? setredOrGreen(true) : setredOrGreen(false)
+        if (response.data.message.length !== 0) {
+          console.log(response.data.message[0].message)
+          setresMessage(response.data.message[0].message)
+        }
         setModalVisible(true);
       })
       .catch(function (error) {
@@ -59,10 +64,17 @@ export default function App() {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               {redOrGreen == true ?
-                <Text style={{ color: "#A5D6A7", marginBottom: Dimensions.get('window').height * 0.06, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
-                  QR Code has been validated.</Text> :
-                <Text style={{ color: "#FF8A65", marginBottom: Dimensions.get('window').height * 0.06, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
+                <Text style={{ color: "#A5D6A7", marginBottom: Dimensions.get('window').height * 0.01, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
+                  QR Code has been validated. </Text> :
+                <Text style={{ color: "#FF8A65", marginBottom: Dimensions.get('window').height * 0.01, paddingBottom: Dimensions.get('window').width * 0.2, textAlign: 'center', fontSize: Dimensions.get('window').height * 0.06 }}>
                   QR Code is invalid.</Text>}
+              {resMessage == null ? <Text></Text> : <Text style={{
+                color: 'black',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontSize: Dimensions.get('window').height * 0.025,
+                paddingBottom: Dimensions.get('window').height * 0.06
+              }}>{resMessage}</Text>}
               <TouchableHighlight
                 style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
                 onPress={() => { setModalVisible(!modalVisible); setScanned(false) }}>
