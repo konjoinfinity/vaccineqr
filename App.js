@@ -22,6 +22,7 @@ export default function App() {
 
 
   const handleBarCodeScanned = ({ type, data, bounds }) => {
+    setresMessage(null)
     setScanned(true);
     console.log(`Type: ${type} || Data: ${data}`)
     var shc = `${data}`
